@@ -1,9 +1,21 @@
 import { useState } from "react";
+import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 import heroImg from '../assets/img/heroImg.jpg';
 import Modal from "./Modal";
 
 export default function Hero() {
     const [isOpen, setIsOpen] = useState(false);
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    const handleReservationClick = () => {
+        if (user) {
+            setIsOpen(true);
+        } else {
+            navigate('/login');
+        }
+    };
 
     return (
         <>
@@ -27,8 +39,8 @@ export default function Hero() {
                     </p>
 
                     <button
-                        onClick={() => setIsOpen(true)}
-                        className="bg-green-500 text-white px-6 py-3 rounded"
+                        onClick={handleReservationClick}
+                        className="bg-green-500 text-white px-6 py-3 rounded hover:bg-green-600 transition"
                     >
                         Rezerwuj
                     </button>
