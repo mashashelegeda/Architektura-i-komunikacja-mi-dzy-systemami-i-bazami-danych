@@ -42,7 +42,7 @@ export default function Register() {
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-md w-96">
                 <h2 className="text-2xl font-bold text-center mb-6">Rejestracja</h2>
-                
+
                 {error && (
                     <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
                         {error}
