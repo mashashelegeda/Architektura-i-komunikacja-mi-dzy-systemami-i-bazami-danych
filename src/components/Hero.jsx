@@ -20,7 +20,7 @@ export default function Hero() {
     return (
         <>
             <section
-                className="text-center py-20 mt-16 relative"
+                className="text-center py-20 relative"
                 style={{
                     backgroundImage: `url(${heroImg})`,
                     backgroundSize: 'cover',
@@ -37,6 +37,7 @@ export default function Hero() {
                     <p className="mb-6 text-gray-600">
                         Szybko i wygodnie zaparkuj swój samochód
                     </p>
+                    <p className="mb-6"><b>Zaloguj się,</b> aby zarezerwować miejsce</p>
 
                     <button
                         onClick={handleReservationClick}

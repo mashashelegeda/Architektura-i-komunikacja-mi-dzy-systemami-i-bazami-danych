@@ -10,9 +10,12 @@ export default function Navbar() {
 
     return (
         <nav className="flex justify-between items-center p-4 shadow-md bg-white">
-            <Link to="/" className="text-xl font-bold hover:text-blue-600">
-                FlyParking
-            </Link>
+            <div className='flex gap-1'>
+                <Link to="/" className="text-xl font-bold hover:text-blue-600">
+                    FlyParking
+                </Link>
+                <img className="w-6" src="src/assets/img/airplane.png" alt="Airplane" />
+            </div>
             <div className="space-x-4">
                 {user ? (
                     <>
