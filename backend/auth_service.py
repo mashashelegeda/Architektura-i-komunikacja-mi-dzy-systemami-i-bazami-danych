@@ -45,6 +45,45 @@ def init_db():
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     ''')
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS parking_spots (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            spot_number TEXT UNIQUE NOT NULL,
+            price_per_day REAL DEFAULT 100.0,
+            is_available INTEGER DEFAULT 1
+        )
+    """)
+    
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS reservations (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_id INTEGER NOT NULL,
+            spot_id INTEGER NOT NULL,
+            start_date TEXT NOT NULL,
+            end_date TEXT NOT NULL,
+            total_price REAL NOT NULL,
+            status TEXT DEFAULT 'active',
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(id),
+            FOREIGN KEY (spot_id) REFERENCES parking_spots(id)
+        )
+    """)
+
+    cursor.execute("SELECT COUNT(*) FROM parking_spots")
+    if cursor.fetchone()[0] == 0:
+        test_spots = [
+            ("A1", 100, 1),
+            ("A2", 100, 1),
+            ("B1", 120, 1),
+            ("B2", 120, 1),
+            ("C1", 90, 1),
+        ]
+        cursor.executemany(
+            "INSERT INTO parking_spots (spot_number, price_per_day, is_available) VALUES (?, ?, ?)",
+            test_spots
+        )
+    
     conn.commit()
     conn.close()
 
