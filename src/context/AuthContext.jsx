@@ -27,15 +27,15 @@ export function AuthProvider({ children }) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password })
             });
-            
+
             const data = await response.json();
-            
+
             if (!response.ok) {
                 alert(data.detail || "Błąd logowania");
                 return false;
             }
-            
-            const userData = { email: data.email, id: data.user_id };
+
+            const userData = { email: data.email, id: data.user_id, name: data.name };
             setUser(userData);
             localStorage.setItem('user', JSON.stringify(userData));
             localStorage.setItem('token', data.access_token);
@@ -54,14 +54,14 @@ export function AuthProvider({ children }) {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, password })
             });
-            
+
             const data = await response.json();
-            
+
             if (!response.ok) {
                 alert(data.detail || "Błąd rejestracji");
                 return false;
             }
-            
+
             const loginSuccess = await login(email, password);
             return loginSuccess;
         } catch (error) {

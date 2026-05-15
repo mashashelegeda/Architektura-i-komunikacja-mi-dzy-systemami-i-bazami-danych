@@ -9,7 +9,8 @@ export default function Login() {
     const { login } = useAuth();
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
@@ -18,7 +19,7 @@ export default function Login() {
             return;
         }
 
-        const success = login(email, password);
+        const success = await login(email, password);
         if (success) {
             navigate('/');
         } else {
@@ -30,7 +31,7 @@ export default function Login() {
         <div className="min-h-screen flex items-center justify-center bg-gray-100">
             <div className="bg-white p-8 rounded-lg shadow-md w-96">
                 <h2 className="text-2xl font-bold text-center mb-6">Logowanie</h2>
-                
+
                 {error && (
                     <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
                         {error}

@@ -40,6 +40,10 @@ class Reservation(BaseModel):
     total_price: float
     status: str
 
+class ReservationUpdate(BaseModel):
+    start_date: str
+    end_date: str
+
 
 def get_db():
     return sqlite3.connect(DB_PATH)
@@ -155,6 +159,54 @@ def cancel_reservation(reservation_id: int):
     conn.close()
     
     return {"message": "Rezerwacja anulowana"}
+
+@app.put("/reservations/{reservation_id}")
+def update_reservation(reservation_id: int, update: ReservationUpdate):
+    conn = get_db()
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT spot_id FROM reservations WHERE id = ? AND status = 'active'",
+        (reservation_id,)
+    )
+    reservation = cursor.fetchone()
+
+    if not reservation:
+        raise HTTPException(404, "Rezerwacja nie istnieje lub jest anulowana")
+
+    spot_id = reservation[0]
+
+    cursor.execute(
+        "SELECT price_per_day FROM parking_spots WHERE id = ?",
+        (spot_id,)
+    )
+    spot = cursor.fetchone()
+
+    if not spot:
+        raise HTTPException(404, "Miejsce nie istnieje")
+
+    start = datetime.strptime(update.start_date, "%Y-%m-%d")
+    end = datetime.strptime(update.end_date, "%Y-%m-%d")
+    days = (end - start).days
+
+    if days <= 0:
+        raise HTTPException(400, "Nieprawidłowe daty")
+
+    total_price = days * spot[0]
+
+    cursor.execute("""
+        UPDATE reservations
+        SET start_date = ?, end_date = ?, total_price = ?
+        WHERE id = ?
+    """, (update.start_date, update.end_date, total_price, reservation_id))
+
+    conn.commit()
+    conn.close()
+
+    return {
+        "message": "Rezerwacja zaktualizowana",
+        "total_price": total_price
+    }
 
 if __name__ == "__main__":
     import uvicorn
