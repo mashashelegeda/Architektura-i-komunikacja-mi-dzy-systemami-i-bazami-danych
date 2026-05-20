@@ -126,7 +126,7 @@ def login(user: UserLogin):
     conn = get_db()
     cursor = conn.cursor()
     
-    cursor.execute("SELECT id, email, password_hash, name FROM users WHERE email = ?", (user.email,))
+    cursor.execute("SELECT id, email, password_hash, is_admin FROM users WHERE email = ?", (user.email,))
     db_user = cursor.fetchone()
     conn.close()
     
@@ -139,7 +139,7 @@ def login(user: UserLogin):
         "token_type": "bearer",
         "user_id": db_user[0],
         "email": db_user[1],
-        "name": db_user[3]
+        "is_admin": db_user[3] == 1
     }
 
 if __name__ == "__main__":

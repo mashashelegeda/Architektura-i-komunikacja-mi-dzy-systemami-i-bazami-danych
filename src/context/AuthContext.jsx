@@ -35,7 +35,11 @@ export function AuthProvider({ children }) {
                 return false;
             }
 
-            const userData = { email: data.email, id: data.user_id, name: data.name };
+            const userData = { 
+               email: data.email, 
+               id: data.user_id,
+               is_admin: data.is_admin
+            };
             setUser(userData);
             localStorage.setItem('user', JSON.stringify(userData));
             localStorage.setItem('token', data.access_token);

@@ -208,6 +208,60 @@ def update_reservation(reservation_id: int, update: ReservationUpdate):
         "total_price": total_price
     }
 
+@app.get("/reservations/all")
+def get_all_reservations():
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT r.id, r.user_id, u.email, s.spot_number, r.start_date, r.end_date, r.total_price, r.status
+        FROM reservations r
+        JOIN users u ON r.user_id = u.id
+        JOIN parking_spots s ON r.spot_id = s.id
+        ORDER BY r.created_at DESC
+    """)
+    rows = cursor.fetchall()
+    conn.close()
+    return [{"id": r[0], "user_id": r[1], "user_email": r[2], "spot_number": r[3], 
+             "start_date": r[4], "end_date": r[5], "total_price": r[6], "status": r[7]} for r in rows]
+
+@app.post("/admin/parking-spots")
+def add_parking_spot(data: dict):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("INSERT INTO parking_spots (spot_number, price_per_day) VALUES (?, ?)",
+                   (data["spot_number"], data["price_per_day"]))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+@app.put("/admin/parking-spots/{spot_id}")
+def update_parking_spot(spot_id: int, data: dict):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE parking_spots SET price_per_day = ? WHERE id = ?", (data["price_per_day"], spot_id))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+@app.delete("/admin/parking-spots/{spot_id}")
+def delete_parking_spot(spot_id: int):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM parking_spots WHERE id = ?", (spot_id,))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
+@app.put("/admin/reservations/{reservation_id}/cancel")
+def admin_cancel_reservation(reservation_id: int):
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE reservations SET status = 'cancelled' WHERE id = ?", (reservation_id,))
+    cursor.execute("UPDATE parking_spots SET is_available = 1 WHERE id = (SELECT spot_id FROM reservations WHERE id = ?)", (reservation_id,))
+    conn.commit()
+    conn.close()
+    return {"ok": True}
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8002, reload=True)
