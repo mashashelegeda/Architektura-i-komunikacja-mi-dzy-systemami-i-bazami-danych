@@ -22,6 +22,11 @@ export default function Navbar() {
                         <Link to="/profile" className="text-gray-700 hover:text-blue-600">
                             Mój profil
                         </Link>
+                        {user?.is_admin && (
+                        <Link to="/admin" className="bg-purple-500 text-white px-4 py-2 rounded">
+                            Admin
+                        </Link>
+)}
                         <button
                             onClick={handleLogout}
                             className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
